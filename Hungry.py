@@ -11,7 +11,8 @@ width = 1000
 height =1000
 gameDisplay = pygame.display.set_mode((width,height))                                   #Defines the display as well as size of it
 pygame.display.set_caption("Hungry _ Snake!!")                                          #Gives caption to the game
-img = pygame.image.load('snake_head.png')
+img = pygame.image.load('head.png')
+body = pygame.image.load('body.png')
 #feed = pygame.image.load('cookie.png')
 White = (255, 255, 255)                                                                   #simple color defining
 black = (0, 0, 0)
@@ -24,11 +25,9 @@ orange = (216, 56, 124)
 cyan = (96, 200, 216)
 color = {
 'White' : (255, 255, 255) ,
-'black' : (0, 0, 0),
-'green' : (0, 255, 0) ,
-'red' : (255, 0, 0) ,
+'green' : (0, 255, 0),
+'red' : (255, 0, 0),
 'blue' : (0,0,255),
-'purple' : (40, 32, 56),
 'yellow' : (248, 184, 120),
 'orange' : (216, 56, 124),
 'cyan' : (96, 200, 216)
@@ -36,8 +35,9 @@ color = {
 color_keys = list(color.keys())
 print(color_keys)
 colors = random.choice(color_keys)
-FPS = 7
+FPS = 8
 direction = "right"
+bonus = 2
 clock = pygame.time.Clock()  # for definin the frame rate per secind clock is used
 ##################################################################################################################################################
 
@@ -52,8 +52,8 @@ def snake(block_size,  snakelist):
         head = pygame.transform.rotate(img, 180)
     gameDisplay.blit(head, (snakelist[-1][0], snakelist[-1][1]))
     for xny in snakelist[:-1]:
-        pygame.draw.rect(gameDisplay, green, [xny[0], xny[1], block_size, block_size])
-
+        #pygame.draw.rect(gameDisplay, color[colors], [xny[0], xny[1], block_size, block_size])
+        gameDisplay.blit(body, (xny[0], xny[1]))
 ##################################################################################################################################################
 smallfont = pygame.font.SysFont("comicsansms", 20)
 mediumfont = pygame.font.SysFont("comicsansms", 40)
@@ -126,10 +126,13 @@ def game_intro():
                 elif event.key == pygame.K_q:
                     pygame.quit()
                     quit()
+
 ##################################################################################################################################################
 def gameloop():
-    global FPS
+    FPS = 8
     global direction
+    global colors
+    global bonus
     direction = "right"
     score = 0
     limit=5
@@ -148,13 +151,14 @@ def gameloop():
     snakelength = 1
     feedx = round(random.randrange(0,width-block_size)/20.0)*20.0
     feedy = round(random.randrange(0,height-block_size)/20.0)*20.0
+    bonus_x = round(random.randrange(0, width - block_size) / 20.0) * 20.0
+    bonus_y = round(random.randrange(0, width - block_size) / 20.0) * 20.0
     colors = random.choice(color_keys)
-
     while gameexit:
         while gameover == True:
             gameDisplay.fill(purple)
             message_to_screen("Game over!! ", red , -300, size="large")
-            message_to_screen("Press C to continue and Q to quit", White , 50, size="medium")
+            message_to_screen("Press C to restart and Q to quit", White , 50, size="medium")
             message_to_screen("Your Score:", White, -100, size="medium")
             message_to_screen(string, White,-100, size="medium", x_displace=-150)
             pygame.display.update()
@@ -200,6 +204,7 @@ def gameloop():
                 elif event.key == pygame.K_SPACE:
                     pause()
 
+
         if lead_x >= height or lead_x< 0 or lead_y >= width or lead_y < 0:
             gameover = True
 
@@ -207,6 +212,10 @@ def gameloop():
         lead_y = lead_y_change + lead_y
 
         pygame.draw.rect(gameDisplay, color[colors],[feedx,feedy, block_size, block_size])
+        if bonus % 3 ==0 :
+            pygame.draw.rect(gameDisplay, color[colors], [bonus_x, bonus_y, block_size, block_size])
+            bonus += 4
+            score
         snakehead = []
         snakehead.append(lead_x)
         snakehead.append(lead_y)
@@ -216,6 +225,7 @@ def gameloop():
         if len(snakelist) > snakelength:
             del snakelist[0]
         for eachSegment in snakelist[:-1]:
+            print(snakelist)
             if eachSegment == snakehead:
                 gameover=True
         snake(block_size,  snakelist)
@@ -230,6 +240,12 @@ def gameloop():
             if score >= limit:
                 FPS += 5
                 limit += 5
+        if bonus_x == lead_x and bonus_y == lead_y:
+            bonus_x = round(random.randrange(0, width - block_size) / 20.0) * 20.0
+            bonus_y = round(random.randrange(0, width - block_size) / 20.0) * 20.0
+            score += 5
+
+
         string = str(score)
         message_to_screen("Score:", White, y_displace=-490, size="small")
         message_to_screen(string, White, y_displace=-490, size="small", x_displace=-50)
