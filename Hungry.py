@@ -216,12 +216,14 @@ def gameloop():
             pygame.draw.rect(gameDisplay, color[colors], [bonus_x, bonus_y, block_size, block_size])
             bonus += 4
             score
+
         snakehead = []
         snakehead.append(lead_x)
         snakehead.append(lead_y)
         snakelist.append(snakehead)
         print(snakelist)
         print(snakehead)
+
         if len(snakelist) > snakelength:
             del snakelist[0]
         for eachSegment in snakelist[:-1]:
@@ -229,22 +231,23 @@ def gameloop():
             if eachSegment == snakehead:
                 gameover=True
         snake(block_size,  snakelist)
-        clock.tick(FPS)                                                                      #This will help in determining your frame rates per second
+        clock.tick(FPS)
 
         if feedx== lead_x and feedy== lead_y:
             feedx = round(random.randrange(0, width - block_size) / 20.0) * 20.0
             feedy = round(random.randrange(0, height - block_size) / 20.0) * 20.0
             colors = random.choice(color_keys)
-            snakelength += 2
+            snakelength += 1.0
             score += 1
+
             if score >= limit:
                 FPS += 5
                 limit += 5
+
         if bonus_x == lead_x and bonus_y == lead_y:
             bonus_x = round(random.randrange(0, width - block_size) / 20.0) * 20.0
             bonus_y = round(random.randrange(0, width - block_size) / 20.0) * 20.0
             score += 5
-
 
         string = str(score)
         message_to_screen("Score:", White, y_displace=-490, size="small")
